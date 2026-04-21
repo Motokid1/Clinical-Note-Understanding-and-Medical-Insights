@@ -17,21 +17,39 @@ A production-grade **Retrieval-Augmented Generation (RAG)** system for ingesting
 │  FastAPI Backend (port 8000)                                     │
 │                                                                  │
 │  Ingestion Pipeline                                              │
-│   PDF/TXT bytes  →  PyPDF extract  →  RecursiveTextSplitter     │
-│   →  HuggingFace Embeddings  →  MongoDB Atlas Vector Store      │
+│   PDF/TXT → PyPDF → Text Splitter → Embeddings → MongoDB Atlas  │
+│                                                                  │
+│  Knowledge Base Pipeline (Startup)                               │
+│   JSON KB → Embeddings → MongoDB Atlas (SYSTEM_USER_ID scope)   │
 │                                                                  │
 │  Query Pipeline                                                  │
-│   User query  →  Embed query  →  Atlas Vector Search            │
-│   →  Guardrailed Prompt  →  Groq LLM  →  JSON response          │
+│   User Query → Embed Query                                       │
+│        ↓                                                         │
+│   Retrieve from:                                                 │
+│     1. User Documents                                            │
+│     2. Knowledge Base                                            │
+│        ↓                                                         │
+│   Merge Context → Guardrailed Prompt → Groq LLM → JSON Response  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+🧠 Key Concept: Dual-Source Retrieval
+
+Unlike traditional RAG, this system retrieves from two sources simultaneously:
+
+Source Scope Purpose
+User Documents user_id = actual user Personalized clinical data
+Knowledge Base user_id = system_knowledge_base General medical reference
+
+👉 Both are merged into a single context before LLM processing
+👉 Implemented in retrieval pipeline
 **Stack:**
+
 - **Backend:** Python · FastAPI · LangChain Core · PyPDF
 - **LLM:** Groq (`llama-3.3-70b-versatile`)
 - **Embeddings:** `sentence-transformers/all-MiniLM-L6-v2` (384-dim)
 - **Vector DB:** MongoDB Atlas Vector Search
-- **Frontend:** React 18 · Vite 
+- **Frontend:** React 18 · Vite
 
 ---
 
@@ -69,13 +87,13 @@ uvicorn main:app --reload --port 8000
 
 ### Environment Variables (`backend/.env`)
 
-| Variable | Description |
-|---|---|
-| `GROQ_API_KEY` | Your Groq API key |
-| `MONGODB_URI` | MongoDB Atlas connection string |
-| `MONGODB_DB_NAME` | Database name (default: `clinical_rag_db`) |
-| `MONGODB_COLLECTION_NAME` | Collection name (default: `clinical_notes_mongo_collection`) |
-| `MONGODB_VECTOR_INDEX_NAME` | Atlas vector index name (default: `vector_index`) |
+| Variable                    | Description                                                  |
+| --------------------------- | ------------------------------------------------------------ |
+| `GROQ_API_KEY`              | Your Groq API key                                            |
+| `MONGODB_URI`               | MongoDB Atlas connection string                              |
+| `MONGODB_DB_NAME`           | Database name (default: `clinical_rag_db`)                   |
+| `MONGODB_COLLECTION_NAME`   | Collection name (default: `clinical_notes_mongo_collection`) |
+| `MONGODB_VECTOR_INDEX_NAME` | Atlas vector index name (default: `vector_index`)            |
 
 ---
 
@@ -102,16 +120,20 @@ Open [http://localhost:5173](http://localhost:5173)
 ## API Reference
 
 ### `GET /health`
+
 Returns API status.
 
 ### `POST /ingest`
+
 Upload a clinical document.
 
 **Form Data:**
+
 - `user_id` (string) — unique user identifier
 - `file` (file) — PDF or TXT document
 
 **Response:**
+
 ```json
 {
   "total_chunks_stored": 12,
@@ -122,9 +144,11 @@ Upload a clinical document.
 ```
 
 ### `POST /query`
+
 Query the user's uploaded documents.
 
 **Body:**
+
 ```json
 {
   "user_id": "patient_001",
@@ -133,6 +157,7 @@ Query the user's uploaded documents.
 ```
 
 **Response:**
+
 ```json
 {
   "answer": "Based on the uploaded clinical notes...",
@@ -144,9 +169,11 @@ Query the user's uploaded documents.
 ```
 
 ### `DELETE /users/{user_id}/documents`
+
 Delete all stored chunks for a user.
 
 ### `GET /users`
+
 List all users with stored documents.
 
 ---
@@ -164,6 +191,7 @@ List all users with stored documents.
 ## MongoDB Atlas Vector Index
 
 The index is created automatically via `setup_index.py`. It uses:
+
 - **Dimensions:** 384 (matching `all-MiniLM-L6-v2`)
 - **Similarity:** cosine
 - **Pre-filter field:** `user_id` (token type) for user-scoped retrieval
