@@ -11,13 +11,16 @@ class IngestResponse(BaseModel):
 
 class QueryRequest(BaseModel):
     user_id: str = Field(..., description="Unique identifier for the user")
-    query: str = Field(..., description="Medical query to answer from the clinical notes")
+    query: str = Field(..., description="Medical query")
 
 
 class SourceChunk(BaseModel):
     text: str
     chunk_index: int
     page: Optional[int] = None
+    source_type: str = "user_document"   # "user_document" | "knowledge_base"
+    kb_title: Optional[str] = None
+    kb_category: Optional[str] = None
 
 
 class QueryResponse(BaseModel):
