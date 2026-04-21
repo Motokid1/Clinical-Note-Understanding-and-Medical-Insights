@@ -33,17 +33,18 @@ A production-grade **Retrieval-Augmented Generation (RAG)** system for ingesting
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-🧠 Key Concept: Dual-Source Retrieval
+## 🧠 Key Concept: Dual-Source Retrieval
 
-Unlike traditional RAG, this system retrieves from two sources simultaneously:
+Unlike traditional RAG, this system retrieves from **two sources simultaneously**:
 
-Source Scope Purpose
-User Documents user_id = actual user Personalized clinical data
-Knowledge Base user_id = system_knowledge_base General medical reference
+| Source            | Scope                              | Purpose                         |
+|------------------|------------------------------------|---------------------------------|
+| **User Documents** | `user_id = actual user`            | Personalized clinical data      |
+| **Knowledge Base** | `user_id = system_knowledge_base`  | General medical reference       |
 
-👉 Both are merged into a single context before LLM processing
-👉 Implemented in retrieval pipeline
---- 
+👉 Both sources are merged into a **single context** before LLM processing  
+👉 Implemented in the **retrieval pipeline**
+
 **Stack:**
 
 - **Backend:** Python · FastAPI · LangChain Core · PyPDF
