@@ -17,10 +17,10 @@ A production-grade **Retrieval-Augmented Generation (RAG)** system for ingesting
 │  FastAPI Backend (port 8000)                                     │
 │                                                                  │
 │  Ingestion Pipeline                                              │
-│   PDF/TXT → PyPDF → Text Splitter → Embeddings → MongoDB Atlas  │
+│   PDF/TXT → PyPDF → Text Splitter → Embeddings → MongoDB Atlas   │
 │                                                                  │
 │  Knowledge Base Pipeline (Startup)                               │
-│   JSON KB → Embeddings → MongoDB Atlas (SYSTEM_USER_ID scope)   │
+│   JSON KB → Embeddings → MongoDB Atlas (SYSTEM_USER_ID scope)    │
 │                                                                  │
 │  Query Pipeline                                                  │
 │   User Query → Embed Query                                       │
@@ -38,9 +38,9 @@ A production-grade **Retrieval-Augmented Generation (RAG)** system for ingesting
 Unlike traditional RAG, this system retrieves from **two sources simultaneously**:
 
 | Source            | Scope                              | Purpose                         |
-|------------------|------------------------------------|---------------------------------|
-| **User Documents** | `user_id = actual user`            | Personalized clinical data      |
-| **Knowledge Base** | `user_id = system_knowledge_base`  | General medical reference       |
+|------------------|-------------------------------------|---------------------------------|
+| **User Documents** | `user_id = actual user`           | Personalized clinical data      |
+| **Knowledge Base** | `user_id = system_knowledge_base` | General medical reference       |
 
 👉 Both sources are merged into a **single context** before LLM processing  
 👉 Implemented in the **retrieval pipeline**
