@@ -43,6 +43,7 @@ Knowledge Base user_id = system_knowledge_base General medical reference
 
 👉 Both are merged into a single context before LLM processing
 👉 Implemented in retrieval pipeline
+--- 
 **Stack:**
 
 - **Backend:** Python · FastAPI · LangChain Core · PyPDF
