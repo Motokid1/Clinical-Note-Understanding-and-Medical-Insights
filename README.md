@@ -31,7 +31,7 @@ A production-grade **Retrieval-Augmented Generation (RAG)** system for ingesting
 - **LLM:** Groq (`llama-3.3-70b-versatile`)
 - **Embeddings:** `sentence-transformers/all-MiniLM-L6-v2` (384-dim)
 - **Vector DB:** MongoDB Atlas Vector Search
-- **Frontend:** React 18 · Vite · JSX only
+- **Frontend:** React 18 · Vite 
 
 ---
 
